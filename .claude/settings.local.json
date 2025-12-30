@@ -8,7 +8,12 @@
       "Bash(npm ls:*)",
       "Bash(ls:*)",
       "Bash(cat:*)",
-      "Bash(if not exist \"c:\\\\Users\\\\tyler\\\\EmailSV\\\\src\\\\app\\\\auth\\\\callback\" mkdir \"c:\\\\Users\\\\tyler\\\\EmailSV\\\\src\\\\app\\\\auth\\\\callback\")"
+      "Bash(if not exist \"c:\\\\Users\\\\tyler\\\\EmailSV\\\\src\\\\app\\\\auth\\\\callback\" mkdir \"c:\\\\Users\\\\tyler\\\\EmailSV\\\\src\\\\app\\\\auth\\\\callback\")",
+      "Bash(if not exist \"c:\\\\Users\\\\tyler\\\\EmailSV\\\\src\\\\app\\\\api\\\\send-invite\" mkdir \"c:\\\\Users\\\\tyler\\\\EmailSV\\\\src\\\\app\\\\api\\\\send-invite\")",
+      "Bash(if not exist \"c:\\\\Users\\\\tyler\\\\EmailSV\\\\src\\\\app\\\\law-firm\\\\profile\" mkdir \"c:\\\\Users\\\\tyler\\\\EmailSV\\\\src\\\\app\\\\law-firm\\\\profile\")",
+      "Bash(del \"c:\\\\Users\\\\tyler\\\\EmailSV\\\\src\\\\middleware.ts\")",
+      "Bash(dir:*)",
+      "Bash(findstr:*)"
     ]
   }
 }

@@ -80,30 +80,44 @@ export function AuthModal({
               button: 'font-medium',
               input: 'font-normal',
               label: 'font-medium text-gray-700',
-              anchor: 'text-blue-600 hover:text-blue-700',
+              anchor: 'hidden', // Hide default links - we'll add our own
             },
           }}
           providers={['google']}
           redirectTo={getRedirectUrl()}
           view={view}
-          showLinks={true}
+          showLinks={false}
           localization={{
             variables: {
               sign_in: {
                 email_label: 'Email',
                 password_label: 'Password',
+                email_input_placeholder: 'Your email address',
+                password_input_placeholder: 'Your password',
                 button_label: 'Sign In',
-                link_text: "Don't have an account? Sign up",
               },
               sign_up: {
                 email_label: 'Email',
                 password_label: 'Password',
+                email_input_placeholder: 'Your email address',
+                password_input_placeholder: 'Your password',
                 button_label: 'Create Account',
-                link_text: 'Already have an account? Sign in',
               },
             },
           }}
         />
+        {/* Custom view toggle link */}
+        <div className="text-center mt-4">
+          <button
+            type="button"
+            onClick={() => setView(view === 'sign_in' ? 'sign_up' : 'sign_in')}
+            className="text-blue-600 hover:text-blue-700 hover:underline text-sm"
+          >
+            {view === 'sign_in'
+              ? "Don't have an account? Sign up"
+              : 'Already have an account? Sign in'}
+          </button>
+        </div>
       </div>
     </Modal>
   )

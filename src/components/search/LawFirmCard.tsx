@@ -65,7 +65,7 @@ export function LawFirmCard({ lawFirm, onLocationHover }: LawFirmCardProps) {
         <div className="flex-1 min-w-0">
           {/* Firm Name */}
           <Link
-            href={`/law-firm/${lawFirm.slug}`}
+            href={`/law-firms/${lawFirm.slug}`}
             className="text-blue-600 hover:underline font-semibold text-lg block truncate"
           >
             {lawFirm.name}

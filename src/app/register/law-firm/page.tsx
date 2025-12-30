@@ -84,7 +84,7 @@ export default function RegisterLawFirmPage() {
 
   // Check if user already has a law firm
   if (profile?.role === 'law_firm') {
-    router.push('/law-firm')
+    router.push('/dashboard')
     return null
   }
 

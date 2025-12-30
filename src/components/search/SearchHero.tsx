@@ -32,8 +32,18 @@ export function SearchHero() {
   }
 
   return (
-    <section className="bg-gradient-to-br from-brand-blue to-brand-blue-light text-white py-20 lg:py-32">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative text-white py-20 lg:py-32 overflow-hidden">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/charlotte.webp)',
+        }}
+      />
+      {/* Dark Overlay for text readability */}
+      <div className="absolute inset-0 bg-brand-blue/50" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-4xl lg:text-5xl font-bold mb-6">
             Find Real Estate Closing Attorneys Near You

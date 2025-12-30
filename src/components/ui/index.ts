@@ -5,3 +5,5 @@ export { Card, CardHeader, CardTitle, CardContent, CardFooter, type CardProps } 
 export { Modal, type ModalProps } from './Modal'
 export { Badge, type BadgeProps } from './Badge'
 export { Spinner, type SpinnerProps } from './Spinner'
+export { AddressAutocomplete } from './AddressAutocomplete'
+export { CurrencyInput, type CurrencyInputProps } from './CurrencyInput'

@@ -86,8 +86,8 @@ export default function AcceptAttorneyInvitePage() {
         })
         .eq('id', invitation.id)
 
-      // Redirect to attorney dashboard (or law firm for now)
-      router.push('/law-firm')
+      // Redirect to unified dashboard - role determines what renders
+      router.push('/dashboard')
     } catch (err) {
       console.error('Accept error:', err)
       setError('Failed to accept invitation. Please try again.')

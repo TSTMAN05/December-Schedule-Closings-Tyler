@@ -210,7 +210,7 @@ function UpcomingClosingCard({ order }: { order: LawFirmOrder }) {
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
   return (
-    <Link href={`/dashboard/orders/${order.id}`} className="block p-3 border rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-colors">
+    <Link href={`/transaction/${order.id}`} className="block p-3 border rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-colors">
       <div className="flex items-start gap-3">
         <div className="text-blue-600 mt-0.5">
           <Calendar size={18} />
@@ -478,7 +478,7 @@ export function LawFirmView() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <Link
-                          href={`/dashboard/orders/${order.id}`}
+                          href={`/transaction/${order.id}`}
                           className="text-blue-600 hover:text-blue-800 font-medium text-sm block truncate"
                         >
                           {fullAddress}

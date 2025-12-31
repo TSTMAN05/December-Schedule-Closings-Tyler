@@ -7,6 +7,7 @@ import { AuthModal } from '@/components/auth'
 import { User, LogOut, ChevronDown, Settings, LayoutDashboard, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import { getProfileTypeLabel } from '@/lib/utils/profileTypes'
+import { getEffectiveProfileType, isAdmin } from '@/types'
 
 export function Header() {
   const { user, profile, isLoading, signOut } = useAuth()
@@ -16,23 +17,26 @@ export function Header() {
   const [authView, setAuthView] = useState<'sign_in' | 'sign_up'>('sign_in')
 
   const getRoleDisplay = () => {
-    const profileType = profile?.profile_type || profile?.role
+    const effectiveType = getEffectiveProfileType(profile)
+
+    // Admin gets priority display
+    if (effectiveType === 'admin') {
+      return { label: 'Admin', color: 'bg-purple-500', href: '/dashboard' }
+    }
 
     // Only show "Setting up..." if onboarding is explicitly false AND no profile_type is set
-    if (profile?.onboarding_completed === false && !profileType) {
+    if (profile?.onboarding_completed === false && !effectiveType) {
       return { label: 'Setting up...', color: 'bg-yellow-500', href: '/onboarding' }
     }
 
     // If we have a profile type, show it
-    const label = getProfileTypeLabel(profileType)
+    const label = getProfileTypeLabel(effectiveType)
 
     // Determine color based on profile category or type
     let color = 'bg-gray-400'
     if (profile?.profile_category === 'service_provider') {
       color = 'bg-blue-500'
-    } else if (profileType === 'admin') {
-      color = 'bg-purple-500'
-    } else if (profileType === 'attorney') {
+    } else if (effectiveType === 'attorney') {
       color = 'bg-indigo-500'
     } else if (profile?.profile_category === 'individual') {
       color = 'bg-green-500'

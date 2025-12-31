@@ -96,6 +96,12 @@ export default function OnboardingPage() {
         .eq('id', user.id)
         .single()
 
+      // Admins don't need onboarding - redirect to dashboard
+      if (profile?.profile_type === 'admin') {
+        router.push('/dashboard')
+        return
+      }
+
       if (profile?.onboarding_completed) {
         // Already completed, redirect to appropriate dashboard
         router.push('/search')

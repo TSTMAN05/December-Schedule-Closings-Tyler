@@ -181,7 +181,7 @@ export function AttorneyView() {
             {upcomingClosings.slice(0, 3).map((order) => (
               <Link
                 key={order.id}
-                href={`/dashboard/orders/${order.id}`}
+                href={`/transaction/${order.id}`}
                 className="block bg-white p-3 rounded border hover:border-blue-300"
               >
                 <div className="flex justify-between items-center">
@@ -238,7 +238,7 @@ export function AttorneyView() {
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <Link
-                        href={`/dashboard/orders/${order.id}`}
+                        href={`/transaction/${order.id}`}
                         className="text-green-600 hover:underline font-medium"
                       >
                         {order.order_number}
@@ -273,7 +273,7 @@ export function AttorneyView() {
                     </td>
                     <td className="px-4 py-3">
                       <Link
-                        href={`/dashboard/orders/${order.id}`}
+                        href={`/transaction/${order.id}`}
                         className="text-green-600 hover:underline text-sm"
                       >
                         View

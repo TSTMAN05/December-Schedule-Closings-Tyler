@@ -25,6 +25,26 @@ export default function CompletePage() {
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/')
+      return
+    }
+
+    // Check if admin - admins don't need onboarding
+    const checkAdminStatus = async () => {
+      if (!user) return
+      const supabase = createClient()
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('profile_type')
+        .eq('id', user.id)
+        .single()
+
+      if (profile?.profile_type === 'admin') {
+        router.push('/dashboard')
+      }
+    }
+
+    if (user) {
+      checkAdminStatus()
     }
   }, [user, authLoading, router])
 

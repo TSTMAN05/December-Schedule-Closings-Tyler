@@ -364,7 +364,7 @@ export function AdminView() {
               return (
                 <Link
                   key={order.id}
-                  href={`/dashboard/orders/${order.id}`}
+                  href={`/transaction/${order.id}`}
                   className="p-4 flex items-center justify-between hover:bg-gray-50"
                 >
                   <div className="flex items-center gap-3">
@@ -442,7 +442,7 @@ export function AdminView() {
               {recentOrders.map((order) => (
                 <Link
                   key={order.id}
-                  href={`/dashboard/orders/${order.id}`}
+                  href={`/transaction/${order.id}`}
                   className="p-4 flex items-center justify-between hover:bg-gray-50"
                 >
                   <div>

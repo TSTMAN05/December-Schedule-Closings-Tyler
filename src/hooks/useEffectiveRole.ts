@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/providers/AuthProvider'
-import { ProfileType } from '@/types'
+import { ProfileType, getEffectiveProfileType, isAdmin as checkIsAdmin } from '@/types'
 
 interface EffectiveRoleResult {
   effectiveRole: ProfileType | null
@@ -28,10 +28,10 @@ export function useEffectiveRole(): EffectiveRoleResult {
   const [isViewingAs, setIsViewingAs] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
 
-  const actualRole = (profile?.profile_type || profile?.role || null) as ProfileType | null
+  const actualRole = getEffectiveProfileType(profile)
 
   useEffect(() => {
-    const isUserAdmin = profile?.role === 'admin' || profile?.profile_type === 'admin'
+    const isUserAdmin = checkIsAdmin(profile)
     setIsAdmin(isUserAdmin)
 
     if (isUserAdmin && typeof window !== 'undefined') {

@@ -198,7 +198,7 @@ export default function DashboardCalendarPage() {
                           {dayOrders.slice(0, 2).map(order => (
                             <Link
                               key={order.id}
-                              href={`/dashboard/orders/${order.id}`}
+                              href={`/transaction/${order.id}`}
                               className="block px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded truncate hover:bg-blue-200"
                             >
                               {order.property_street}

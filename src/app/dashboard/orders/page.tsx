@@ -295,7 +295,7 @@ function OrdersContent() {
                     </td>
                     <td className="px-4 py-3">
                       <Link
-                        href={`/dashboard/orders/${order.id}`}
+                        href={`/transaction/${order.id}`}
                         className="p-1 text-blue-600 hover:bg-blue-50 rounded inline-flex"
                         title="View Details"
                       >

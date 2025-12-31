@@ -4,6 +4,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Spinner } from '@/components/ui'
+import { getEffectiveProfileType } from '@/types'
 import {
   CustomerView,
   AdminView,
@@ -18,6 +19,7 @@ import {
 export default function DashboardPage() {
   const { user, profile, isLoading } = useAuth()
   const router = useRouter()
+  const effectiveType = getEffectiveProfileType(profile)
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -26,10 +28,10 @@ export default function DashboardPage() {
 
     // Redirect to onboarding only if:
     // - onboarding not completed AND no profile_type set AND not an admin
-    if (!isLoading && user && profile && !profile.onboarding_completed && !profile.profile_type && profile.role !== 'admin') {
+    if (!isLoading && user && profile && !profile.onboarding_completed && !effectiveType) {
       router.push('/onboarding')
     }
-  }, [isLoading, user, profile, router])
+  }, [isLoading, user, profile, effectiveType, router])
 
   if (isLoading || !profile) {
     return (
@@ -43,32 +45,33 @@ export default function DashboardPage() {
     return null
   }
 
-  // Determine role from profile
-  const roleName = profile.profile_type || profile.role || 'customer'
-
-  // Render the appropriate view based on role
-  if (roleName === 'admin') {
+  // Admin view
+  if (effectiveType === 'admin') {
     return <AdminView />
   }
 
-  if (roleName === 'attorney') {
+  // Attorney view
+  if (effectiveType === 'attorney') {
     return <AttorneyView />
   }
 
-  if (roleName === 'real_estate_agent') {
+  // Real estate agent view
+  if (effectiveType === 'real_estate_agent') {
     return <RealEstateAgentView />
   }
 
-  if (roleName === 'closing_coordinator') {
+  // Closing coordinator view
+  if (effectiveType === 'closing_coordinator') {
     return <ClosingCoordinatorView />
   }
 
-  if (roleName === 'lender' || roleName === 'loan_processor') {
+  // Lender / loan processor view
+  if (effectiveType === 'lender' || effectiveType === 'loan_processor') {
     return <LenderView />
   }
 
   // Service provider types (law_firm, title_company, title_search, title_insurance, notary)
-  if (SERVICE_PROVIDER_TYPES.includes(roleName as typeof SERVICE_PROVIDER_TYPES[number])) {
+  if (effectiveType && SERVICE_PROVIDER_TYPES.includes(effectiveType as typeof SERVICE_PROVIDER_TYPES[number])) {
     return <LawFirmView />
   }
 

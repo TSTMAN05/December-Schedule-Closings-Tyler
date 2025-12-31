@@ -1,4 +1,4 @@
-// User role types matching database ENUM
+// Legacy UserRole type - deprecated, use ProfileType instead
 export type UserRole = 'customer' | 'attorney' | 'law_firm' | 'admin'
 export type CustomerType = 'buyer' | 'seller' | 'real_estate_agent' | 'lender' | 'other'
 export type ClosingType = 'purchase' | 'refinance' | 'heloc' | 'other'
@@ -40,10 +40,10 @@ export interface Profile {
   email: string
   full_name: string
   phone: string | null
-  role: UserRole
+  role: UserRole // Deprecated - kept for backwards compatibility, use profile_type
   customer_type: CustomerType | null
   avatar_url: string | null
-  profile_type: ProfileType | null
+  profile_type: ProfileType | null // Primary field for user type
   profile_category: ProfileCategory | null
   onboarding_completed: boolean | null
   onboarding_step: number | null
@@ -64,6 +64,21 @@ export interface Profile {
   notify_marketing: boolean | null
   created_at: string
   updated_at: string
+}
+
+// Helper to get effective profile type (prioritizes profile_type over role)
+export function getEffectiveProfileType(profile: Profile | null): ProfileType | null {
+  if (!profile) return null
+  // profile_type is the primary field
+  if (profile.profile_type) return profile.profile_type
+  // Fall back to role for legacy data
+  if (profile.role) return profile.role as ProfileType
+  return 'customer'
+}
+
+// Check if user is admin
+export function isAdmin(profile: Profile | null): boolean {
+  return getEffectiveProfileType(profile) === 'admin'
 }
 
 // Law Firm
@@ -381,4 +396,183 @@ export interface PipelineStats {
   pending: number
   readyToClose: number
   closedLast30: number
+}
+
+// ============================================
+// TRANSACTION WINDOW TYPES
+// ============================================
+
+// Transaction/Deal status - follows the closing workflow
+export type TransactionStatus =
+  | 'new'
+  | 'in_progress'
+  | 'ready_to_close'
+  | 'closed'
+  | 'post_closing'
+  | 'complete'
+  | 'cancelled'
+
+// Transaction tabs
+export type TransactionTab =
+  | 'summary'
+  | 'documents'
+  | 'appointments'
+  | 'notary'
+  | 'parties'
+  | 'chats'
+  | 'tasks'
+  | 'title_search'
+  | 'title_insurance'
+  | 'history'
+
+// Transaction party side
+export type TransactionSide = 'buyer' | 'seller'
+
+// Transaction party role for the deal
+export type TransactionPartyRole =
+  | 'buyer'
+  | 'seller'
+  | 'buyer_attorney'
+  | 'seller_attorney'
+  | 'buyer_paralegal'
+  | 'seller_paralegal'
+  | 'buyer_agent'
+  | 'seller_agent'
+  | 'lender'
+  | 'loan_processor'
+  | 'title_agent'
+  | 'notary'
+  | 'closing_coordinator'
+
+// Transaction party - a participant in the deal
+export interface TransactionParty {
+  id: string
+  transaction_id: string
+  profile_id: string | null
+  role: TransactionPartyRole
+  side: TransactionSide
+  name: string
+  email: string
+  phone: string | null
+  company: string | null
+  is_primary: boolean
+  can_edit: boolean
+  can_view_documents: boolean
+  can_message: boolean
+  created_at: string
+  updated_at: string
+  // Nested
+  profile?: Profile
+}
+
+// Transaction message/chat
+export interface TransactionMessage {
+  id: string
+  transaction_id: string
+  sender_id: string
+  recipient_id: string | null // null = group message to all allowed parties
+  content: string
+  is_read: boolean
+  read_at: string | null
+  created_at: string
+  // Nested
+  sender?: Profile
+  recipient?: Profile
+}
+
+// Transaction document
+export interface TransactionDocument {
+  id: string
+  transaction_id: string
+  uploaded_by: string
+  name: string
+  file_url: string
+  file_type: string
+  file_size: number
+  category: string | null
+  is_shared: boolean
+  shared_with_sides: TransactionSide[]
+  created_at: string
+  // Nested
+  uploader?: Profile
+}
+
+// Transaction appointment
+export interface TransactionAppointment {
+  id: string
+  transaction_id: string
+  title: string
+  description: string | null
+  appointment_type: 'closing' | 'signing' | 'walkthrough' | 'inspection' | 'other'
+  scheduled_at: string
+  duration_minutes: number
+  location: string | null
+  is_virtual: boolean
+  virtual_link: string | null
+  created_by: string
+  created_at: string
+  updated_at: string
+  // Nested
+  creator?: Profile
+  attendees?: TransactionParty[]
+}
+
+// Transaction history/activity log entry
+export interface TransactionHistoryEntry {
+  id: string
+  transaction_id: string
+  user_id: string | null
+  action: string
+  description: string
+  metadata: Record<string, unknown> | null
+  created_at: string
+  // Nested
+  user?: Profile
+}
+
+// Main Transaction/Deal interface
+export interface Transaction {
+  id: string
+  order_id: string // Links back to the original order
+  deal_number: string
+  property_address: string
+  property_city: string
+  property_state: string
+  property_zip: string
+  deal_type: ClosingType
+  financing_type: string | null
+  sale_price: number | null
+  closing_date: string | null
+  closing_time: string | null
+  closing_location: string | null
+  status: TransactionStatus
+  buyer_side_law_firm_id: string | null
+  seller_side_law_firm_id: string | null
+  buyer_side_paralegal_id: string | null
+  seller_side_paralegal_id: string | null
+  created_at: string
+  updated_at: string
+  // Nested relations
+  order?: Order
+  buyer_side_law_firm?: LawFirm
+  seller_side_law_firm?: LawFirm
+  buyer_side_paralegal?: Attorney
+  seller_side_paralegal?: Attorney
+  parties?: TransactionParty[]
+  messages?: TransactionMessage[]
+  documents?: TransactionDocument[]
+  appointments?: TransactionAppointment[]
+  history?: TransactionHistoryEntry[]
+}
+
+// User's role context in a transaction
+export interface TransactionUserContext {
+  transaction_id: string
+  user_id: string
+  role: TransactionPartyRole
+  side: TransactionSide
+  can_edit: boolean
+  can_view_all_documents: boolean
+  can_message_all: boolean
+  allowed_message_parties: string[] // party IDs user can message
 }

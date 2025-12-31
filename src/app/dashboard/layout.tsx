@@ -8,6 +8,7 @@ import { useAuth } from '@/providers/AuthProvider'
 import { createClient } from '@/lib/supabase/client'
 import { Spinner } from '@/components/ui'
 import { getProfileTypeLabel } from '@/lib/utils/profileTypes'
+import { getEffectiveProfileType } from '@/types'
 import {
   LayoutDashboard,
   FileText,
@@ -137,7 +138,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!profile) return
 
     // Redirect to onboarding if not completed (but not for admins)
-    if (!profile.onboarding_completed && !profile.profile_type && profile.role !== 'admin') {
+    const effectiveType = getEffectiveProfileType(profile)
+    if (!profile.onboarding_completed && !effectiveType) {
       router.push('/onboarding')
       return
     }
@@ -147,8 +149,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (!user || !profile) return
 
-    const roleName = profile.profile_type || profile.role || 'customer'
-    const isServiceProvider = SERVICE_PROVIDER_TYPES.includes(roleName as typeof SERVICE_PROVIDER_TYPES[number])
+    const effectiveType = getEffectiveProfileType(profile)
+    const isServiceProvider = effectiveType && effectiveType !== 'admin' && SERVICE_PROVIDER_TYPES.includes(effectiveType as typeof SERVICE_PROVIDER_TYPES[number])
 
     if (!isServiceProvider) return
 
@@ -206,12 +208,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return null
   }
 
-  // Determine role from profile
-  const roleName = profile.profile_type || profile.role || 'customer'
-  const roleLabel = getProfileTypeLabel(roleName)
-  const navItems = getNavItems(roleName)
-  const theme = getRoleTheme(roleName)
-  const isServiceProvider = SERVICE_PROVIDER_TYPES.includes(roleName as typeof SERVICE_PROVIDER_TYPES[number])
+  // Use effective profile type (prioritizes profile_type, falls back to role)
+  const effectiveType = getEffectiveProfileType(profile) || 'customer'
+  const roleLabel = effectiveType === 'admin' ? 'Admin' : getProfileTypeLabel(effectiveType)
+  const navItems = getNavItems(effectiveType)
+  const theme = getRoleTheme(effectiveType)
+  const isServiceProvider = effectiveType !== 'admin' && SERVICE_PROVIDER_TYPES.includes(effectiveType as typeof SERVICE_PROVIDER_TYPES[number])
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -228,7 +230,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className={`w-10 h-10 ${theme.bg} rounded-lg flex items-center justify-center`}>
-                  {roleName === 'admin' ? (
+                  {effectiveType === 'admin' ? (
                     <Shield className="text-white" size={20} />
                   ) : (
                     <Building className="text-white" size={20} />
@@ -237,10 +239,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 {!sidebarCollapsed && (
                   <div>
                     <span className="font-semibold text-gray-900 text-sm flex items-center gap-1">
-                      {roleName === 'admin' ? 'Admin' : lawFirmName}
+                      {effectiveType === 'admin' ? 'Admin' : lawFirmName}
                       <ChevronLeft size={14} className="rotate-270 text-gray-400" />
                     </span>
-                    {lawFirmSlug && (
+                    {lawFirmSlug && effectiveType !== 'admin' && (
                       <Link href={`/law-firms/${lawFirmSlug}`} className="text-xs text-blue-600 hover:underline">
                         Law Firm - View Page
                       </Link>
@@ -347,17 +349,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">
-                  {roleName === 'admin' ? 'Platform Administration' : `${roleLabel} Dashboard`}
+                  {effectiveType === 'admin' ? 'Platform Administration' : `${roleLabel} Dashboard`}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  {roleName === 'admin'
+                  {effectiveType === 'admin'
                     ? 'Monitor platform health and manage approvals'
                     : `Welcome back, ${profile?.full_name || user.email}`
                   }
                 </p>
               </div>
               {/* Hide Schedule Closing for admins - they observe, don't operate */}
-              {roleName !== 'admin' && (
+              {effectiveType !== 'admin' && (
                 <Link
                   href="/search"
                   className={`${theme.bg} text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity text-sm font-medium`}
